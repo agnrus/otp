@@ -162,6 +162,19 @@ start_it("efile", Id, Pid, _Hosts) ->
                     timeout = infinity,
                     multi_get = MultiGet,
                     prim_state = PS},
+    loop(State, Pid, []);
+
+start_it(Pgm, Id, Pid, _Hosts) ->
+    process_flag(trap_exit, true),
+    Port = open_port({spawn, Pgm}, [binary]),
+    init_ack(Pid),
+    PS = prim_init(),
+    State = #state {loader = Pgm,
+                    id = Id,
+                    data = Port,
+                    timeout = ?IDLE_TIMEOUT,
+                    n_timeouts = ?N_TIMEOUTS,
+                    prim_state = PS},
     loop(State, Pid, []).
 
 init_ack(Pid) ->
